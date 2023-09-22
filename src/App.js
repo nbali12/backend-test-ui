@@ -27,35 +27,31 @@ function App() {
     const handleDepartmentChange = (event) => {
       const value = event.target.value;
       console.log(value)
-      setDepartmentData()
+      setDepartmentData([])
       setSelectedDepartment(value);
     };
 
     const handleDateChange = (event) => {
       const value = event.target.value;
       console.log(value)
-      setDepartmentData()
+      setDepartmentData([])
       setSelectedDate(value);
     };
   
   const handleGetDataClick = () => {
-    console.log("inside button");
-      getOrderData(selectedDepartment, selectedDate);
+      getDisplayData(selectedDepartment, selectedDate);
     };
   
-  const getOrderData = async (selectedDepartment, selectedDate) => {
+  const getDisplayData = async (selectedDepartment, selectedDate) => {
       console.log("inside getOrderData");
       let response;
       if (selectedDepartment === "Picking Team") {
         response = await axios.get(`${baseUrl}/lineItemCount?orderDate=${selectedDate}`)
-        console.log(response.data.lineItemCounts)
         getPickerList(response.data.lineItemCounts)
       }
       else if (selectedDepartment === "Packing Team") {
-        
-      console.log("inside getOrderData else if");
         response = await axios.get(`${baseUrl}/orders?orderDate=${selectedDate}`)
-        console.log(response.data)
+        setDepartmentData(response.data)
       }
       // setDepartmentData(response.data);
     };
@@ -75,12 +71,30 @@ function App() {
     itemToSell.push(`Pen x${data.ClientGiftBox}`)
     console.log(itemToSell)
     setDepartmentData(itemToSell)
+
+  }
+  
+  const renderLineItems = (lineItems) => {
+    return (
+      <ul>
+        {Object.keys(lineItems[0]).map((boxName) => (
+          <div key={boxName}>
+            <h4>{boxName}</h4>
+            <ul>
+              {lineItems[0][boxName].contains.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </ul>
+    );
   }
   
 
   return (
-  <div className="App" >
-    <div className="App" style={{padding: '10px'}}>
+  <div className="App" style={{padding: '10px'}}>
+    <div className="App" style={{padding: '30px'}}>
       <div>
         <h2>Select Department:</h2>
         <select
@@ -120,19 +134,50 @@ function App() {
           </button>
           </div>
     </div>
-
-
-  <div style={{ marginTop: '50px' }}>
-     <table>
-      <tbody>
-        <td>
-          {departmentData.map((item, index) => (
-            <tr key={index}>{item}</tr>
-          ))}
-        </td>
-      </tbody>
-    </table>
-  </div>
+    <div >
+      <table>
+        <tbody>
+            <td>
+              {selectedDepartment === "Packing Team" &&
+                (
+                <div>
+                  {departmentData.map((order) => (
+                    <div key={order.orderNumber}>
+                      <h2>Order #{order.orderNumber}</h2>
+                      <p>
+                        <strong>Order Date:</strong> {order.orderDate}
+                      </p>
+                      <h3>Line Items</h3>
+                      {renderLineItems(order.lineItems)}
+                      <h3>Ships to</h3>
+                      <p>{order.shipTo.name}</p>
+                      <p>{order.shipTo.address}</p>
+                      <p style={{ borderTop: '1px solid #000', marginTop: '10px', paddingTop: '10px', width:'500px' }} />        
+                    </div>
+                  ))}
+                </div>
+                )
+              }
+              {selectedDepartment === "Picking Team" &&
+                (
+                <div>
+                  {departmentData.map((item, index) => (
+                    <tr key={index}>
+                      <ul>
+                        <li>
+                          <span>{item.slice(0, -2)}</span>
+                          <span style={{ fontWeight: 'bold' }}>{item.slice(-2)}</span>
+                        </li>
+                      </ul>
+                    </tr>
+                  ))}
+                </div>
+                )
+              }
+          </td>
+        </tbody>
+      </table>
+    </div>
 </div>
 
   
