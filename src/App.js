@@ -6,7 +6,6 @@ function App() {
   const [availableDates, setAvailableDates] = useState([]);
   const [selectedDate, setSelectedDate] = useState();
   const [departmentData, setDepartmentData] = useState([]);
-  // const [locationUpdates, setLocationUpdates] = useState([]);
 
   const Departments = ["Picking Team","Packing Team"]
 
@@ -26,14 +25,12 @@ function App() {
 
     const handleDepartmentChange = (event) => {
       const value = event.target.value;
-      console.log(value)
       setDepartmentData([])
       setSelectedDepartment(value);
     };
 
     const handleDateChange = (event) => {
       const value = event.target.value;
-      console.log(value)
       setDepartmentData([])
       setSelectedDate(value);
     };
@@ -43,7 +40,6 @@ function App() {
     };
   
   const getDisplayData = async (selectedDepartment, selectedDate) => {
-      console.log("inside getOrderData");
       let response;
       if (selectedDepartment === "Picking Team") {
         response = await axios.get(`${baseUrl}/lineItemCount?orderDate=${selectedDate}`)
@@ -69,7 +65,6 @@ function App() {
     itemToSell.push(`Bottle of wine x${data.ClientGiftBox}`)
     itemToSell.push(`Fruit basket x${data.ClientGiftBox}`)
     itemToSell.push(`Pen x${data.ClientGiftBox}`)
-    console.log(itemToSell)
     setDepartmentData(itemToSell)
 
   }
@@ -125,7 +120,6 @@ function App() {
           ))}
         </select>
         </div>
-        {console.log("selectedDepartment "+selectedDepartment)}
           <div style={{ paddingTop: '20px' }}>
           <button
             onClick={handleGetDataClick}
